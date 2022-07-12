@@ -1,38 +1,19 @@
-.App {
-  text-align: center;
+.container{
+    display: flex;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.left{
+    flex: 0 0 30%;
+    background: #323030;
+    color: #fff;
+    padding-left: 10px;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.right{
+    flex: 0 0 68%;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.sidebar-tabs{
+    cursor: pointer;
+    font-size: 18px;
 }
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.FolderTree .CheckBox{
+    display: none !important;
 }
