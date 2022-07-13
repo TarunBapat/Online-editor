@@ -10,28 +10,58 @@ import Header from "./components/Header";
 
 function App() {
   const monacoRef = useRef(null);
-  const [content, setContent] = useState(``);
+  const [content, setContent] = useState({});
+  const [fileData,setFileData]=useState(files)
 
   const handleOnClick = (id) => {
-    const contentData = files.find((data) => data.id == id);
+    const contentData = fileData.find((data) => data.id == id);
     setContent(contentData);
+    console.log("contentData",contentData);
   };
   function handleEditorChange(value, event) {
-    console.log(content);
-    console.log("event triggered on editor change", event);
-    console.log("value triggered on editor change", value);
-    let originalContent = files.find((data) => data.id == content.id);
-    console.log("originalContent", originalContent);
-    // console.log("originalContent.content",originalContent.content);
-    // originalContent.content=value
+ 
+    // console.log("value triggered on editor change", value);
+
+    setContent((prevContent)=>({...prevContent,content:value}))
+
   }
-  const onTreeStateChange = (state, event) => console.log(state, event);
-  console.log(content);
+  // const onTreeStateChange = (state, event) => console.log(state, event);
+  
   const onNameClick = ({ defaultOnClick, nodeData }) => {
     defaultOnClick();
+    console.log("nodeData.id",nodeData.id);
     handleOnClick(nodeData.id);
   };
 
+  const handleKeyDown = (event) => {
+    // event.preventDefault();
+    let charCode = String.fromCharCode(event.which).toLowerCase();
+    if ((event.ctrlKey || event.metaKey) && charCode === "s") {
+      const foundIndex = fileData.findIndex(t => t.id === content.id)
+      console.log("files array index values",foundIndex);
+      if(foundIndex!==-1){
+        let temp = fileData;
+        temp[foundIndex].content = content.content
+        console.log("updated data file",temp); 
+        console.log("content state ",content);   
+        setFileData(temp)
+  
+      }
+    }
+  };
+  const handleSave=()=>{
+    console.log("content state ",content);   
+    const foundIndex = fileData.findIndex(t => t.id === content.id)
+      console.log("files array index values",foundIndex);
+      if(foundIndex!==-1){
+        let temp = fileData;
+        temp[foundIndex].content = content.content
+        console.log("updated data file",temp); 
+        setFileData(temp)
+  
+      }
+
+  }
   return (
     <>
       <Header />
@@ -40,13 +70,14 @@ function App() {
           {/* <Sidebar data={data} handleOnClick={handleOnClick}/> */}
           <FolderTree
             data={data}
-            onChange={onTreeStateChange}
+            // onChange={onTreeStateChange}
             onNameClick={onNameClick}
             showCheckbox={false}
             indentPixels={12}
           />
         </div>
         <div className="right">
+          <button onClick={handleSave}>Save </button>
           <Editor
             height="100vh"
             defaultLanguage="java"
@@ -62,3 +93,5 @@ function App() {
 }
 
 export default App;
+
+
