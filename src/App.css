@@ -1,19 +1,26 @@
-.container{
-    display: flex;
+.container {
+  display: flex;
 }
-.left{
-    flex: 0 0 30%;
-    background: #323030;
-    color: #fff;
-    padding-left: 10px;
+.left {
+  flex: 0 0 28%;
+  background: #323030;
+  color: #fff;
+  padding-left: 10px;
 }
-.right{
-    flex: 0 0 68%;
+.right {
+  flex: 0 0 72%;
 }
-.sidebar-tabs{
-    cursor: pointer;
-    font-size: 18px;
+.sidebar-tabs {
+  cursor: pointer;
+  font-size: 18px;
 }
-.FolderTree .CheckBox{
-    display: none !important;
+.AddFileIcon,
+.AddFolderIcon {    
+  display: none;
+}
+.header-container {
+  padding: 12px;
+  background: #151515;
+  color: #fff;
+  border-bottom: 1px solid #fff;
 }
