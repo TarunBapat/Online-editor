@@ -26,9 +26,16 @@
 }
 .save-button {
   background-color: #221d1d;
+  display: flex;
+  align-items: center;
 }
 .save-icon {
   font-size: 25px;
   color: #fff;
   cursor: pointer;
+}
+.current-file{
+  color: #fff;
+  background: #483f3f;
+  padding: 6px;
 }
