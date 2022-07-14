@@ -1,12 +1,19 @@
 import React, { useRef, useState } from "react";
-import Sidebar from "./components/Sidebar";
 import { data } from "./data";
 import { files } from "./data";
+
 import "./App.css";
+
 import Editor from "@monaco-editor/react";
 import FolderTree from "react-folder-tree";
+
 import "react-folder-tree/dist/style.css";
+
 import Header from "./components/Header";
+
+import { FaRegHeart } from 'react-icons/fa';
+import { AiFillSave } from "react-icons/ai";
+
 
 function App() {
   const monacoRef = useRef(null);
@@ -14,7 +21,7 @@ function App() {
   const [fileData,setFileData]=useState(files)
 
   const handleOnClick = (id) => {
-    const contentData = fileData.find((data) => data.id == id);
+    const contentData = fileData.find((data) => data.id === id);
     setContent(contentData);
     console.log("contentData",contentData);
   };
@@ -77,7 +84,7 @@ function App() {
           />
         </div>
         <div className="right">
-          <button onClick={handleSave}>Save </button>
+          <div className="save-button"><span className="save-icon" onClick={handleSave}><AiFillSave/></span> </div>
           <Editor
             height="100vh"
             defaultLanguage="java"
