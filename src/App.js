@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { data } from "./data";
+import React, { useEffect, useState } from "react";
+
 import { files } from "./data";
 
 import "./App.css";
@@ -12,71 +12,70 @@ import "react-folder-tree/dist/style.css";
 import Header from "./components/Header";
 
 import { AiFillSave } from "react-icons/ai";
-import { BiWifi0,BiX } from "react-icons/bi";
-import MockServer from "./components/MockServer";
+import { BiWifi0, BiX } from "react-icons/bi";
 
 function App() {
-  const monacoRef = useRef(null);
   const [content, setContent] = useState({});
-  const [fileData, setFileData] = useState(files);
+  const [fileData, setFileData] = useState([]);
   const [treeData, setTreeData] = useState([]);
-  const [isDirectory,setIsDirectory]=useState(false);
-  const [edit,setEdit]=useState(false)
+  const [isDirectory, setIsDirectory] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     async function fetchTreeData() {
       const resp = await fetch(
-        "https://my-json-server.typicode.com/open-veezoo/editor/filetree"
+        "https://my-json-server.typicode.com/open-veezoo/editor/db"
       );
-      const data = await resp.json();
-      console.log(data);
-      setTreeData(data[0]);
+      const { files, filetree } = await resp.json();
+
+      setTreeData(filetree[0]);
+      setFileData(files);
     }
     fetchTreeData();
   }, []);
 
-  // const fetchFileById=async(id)=>{
-
-  // }
-  const handleOnClick = (id,isDirectory) => {
+  console.log("file Data", fileData);
+  const fetchFileById = async (id, isDirectory) => {
+    const response = await fetch(
+      `https://my-json-server.typicode.com/open-veezoo/editor/files/${id}`
+    );
+    const data = await response.json();
+    console.log(data);
+    setContent(data);
+    setIsDirectory(isDirectory);
+  };
+  const UpdateFileByID = async (id) => {
+    const response = await fetch(
+      `https://my-json-server.typicode.com/open-veezoo/editor/files/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(content),
+      }
+    );
+  };
+  const handleOnClick = (id, isDirectory) => {
     const contentData = fileData.find((data) => data.id === id);
-    // fetchFileById()
     setContent(contentData);
-    setIsDirectory(isDirectory)
+    setIsDirectory(isDirectory);
     console.log("contentData", contentData);
   };
+
   function handleEditorChange(value, event) {
-    // console.log("value triggered on editor change", value);
-    console.log("event=", event);
-    setEdit(true)
-    setContent((prevContent) => ({ ...prevContent, content: value}));
-    
+    setContent((prevContent) => {
+      setEdit(true);
+      return { ...prevContent, content: value };
+    });
   }
-  // const onTreeStateChange = (state, event) => console.log(state, event);
 
   const onNameClick = ({ defaultOnClick, nodeData }) => {
     setEdit(false);
-    // defaultOnClick();
-    {edit && console.log("xsgfxsg")}
+    defaultOnClick();
     console.log("nodeData", nodeData);
-    handleOnClick(nodeData.id,nodeData.isDirectory);
+    handleOnClick(nodeData.id, nodeData.isDirectory);
+    // fetchFileById(nodeData.id,nodeData.isDirectory)
   };
 
-  const handleKeyDown = (event) => {
-    // event.preventDefault();
-    let charCode = String.fromCharCode(event.which).toLowerCase();
-    if ((event.ctrlKey || event.metaKey) && charCode === "s") {
-      const foundIndex = fileData.findIndex((t) => t.id === content.id);
-      console.log("files array index values", foundIndex);
-      if (foundIndex !== -1) {
-        let temp = fileData;
-        temp[foundIndex].content = content.content;
-        console.log("updated data file", temp);
-        console.log("content state ", content);
-        setFileData(temp);
-      }
-    }
-  };
   const handleSave = () => {
     console.log("content state ", content);
     const foundIndex = fileData.findIndex((t) => t.id === content.id);
@@ -87,23 +86,20 @@ function App() {
       console.log("updated data file", temp);
       setFileData(temp);
     }
-    setEdit(false)
+    setEdit(false);
   };
   console.log("Tree data", treeData);
   return (
     <>
       <Header />
-      {/* <MockServer/>  */}
+
       <div className="container">
         <div className="left">
-          {/* <Sidebar data={data} handleOnClick={handleOnClick}/> */}
           <FolderTree
             data={treeData}
-            // onChange={onTreeStateChange}
             onNameClick={onNameClick}
             showCheckbox={false}
             indentPixels={12}
-            
           />
         </div>
         <div className="right">
@@ -111,15 +107,21 @@ function App() {
             <span className="save-icon" onClick={handleSave}>
               <AiFillSave />
             </span>{" "}
-            {!isDirectory && <span className="current-file">{content.name}&nbsp;&nbsp;{edit?<BiWifi0 color="#fff"/>:<BiX color="#fff"/>}</span>}
+            {!isDirectory && (
+              <span className="current-file">
+                {content.name}
+                {edit ? <BiWifi0 color="#fff" /> : <BiX color="#fff" />}
+              </span>
+            )}
           </div>
           <Editor
             height="100vh"
             defaultLanguage="java"
-            defaultValue="JavaScript"
+            defaultValue={files[0].content}
             value={content && content?.content}
             onChange={handleEditorChange}
             theme="vs-dark"
+            onMount={() => console.log("mount")}
           />
         </div>
       </div>
