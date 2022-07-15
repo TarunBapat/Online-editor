@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { files } from "./data";
-
+import { base_url } from "./utils";
 import "./App.css";
 
 import Editor from "@monaco-editor/react";
@@ -23,36 +23,27 @@ function App() {
 
   useEffect(() => {
     async function fetchTreeData() {
-      const resp = await fetch(
-        "https://my-json-server.typicode.com/open-veezoo/editor/db"
-      );
+      const resp = await fetch(`${base_url}/db`);
       const { files, filetree } = await resp.json();
-
       setTreeData(filetree[0]);
       setFileData(files);
     }
     fetchTreeData();
   }, []);
 
-  console.log("file Data", fileData);
   const fetchFileById = async (id, isDirectory) => {
-    const response = await fetch(
-      `https://my-json-server.typicode.com/open-veezoo/editor/files/${id}`
-    );
+    const response = await fetch(`${base_url}/files/${id}`);
     const data = await response.json();
     console.log(data);
     setContent(data);
     setIsDirectory(isDirectory);
   };
   const UpdateFileByID = async (id) => {
-    const response = await fetch(
-      `https://my-json-server.typicode.com/open-veezoo/editor/files/${id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(content),
-      }
-    );
+    const response = await fetch(`${base_url}/files/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(content),
+    });
   };
   const handleOnClick = (id, isDirectory) => {
     const contentData = fileData.find((data) => data.id === id);
