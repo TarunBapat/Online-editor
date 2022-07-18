@@ -11,7 +11,7 @@ import "react-folder-tree/dist/style.css";
 
 import Header from "./components/Header";
 
-import { AiFillSave } from "react-icons/ai";
+import { AiFillSave, AiFillDelete } from "react-icons/ai";
 import { BiWifi0, BiX } from "react-icons/bi";
 
 function App() {
@@ -37,7 +37,7 @@ function App() {
     setContent(data);
     setIsDirectory(isDirectory);
   };
-  
+
   const UpdateFileByID = async (id) => {
     const response = await fetch(`${base_url}/files/${id}`, {
       method: "PUT",
@@ -62,13 +62,25 @@ function App() {
   const onNameClick = ({ defaultOnClick, nodeData }) => {
     setEdit(false);
     defaultOnClick();
-    
+
     handleOnClick(nodeData.id, nodeData.isDirectory);
     // fetchFileById(nodeData.id,nodeData.isDirectory)
   };
 
+  const deleteFileById = async (id) => {
+    const resp = await fetch(`${base_url}/files/${id}`, { method: "DELETE" });
+  };
+  const DeleteIcon = ({ onClick: defaultOnClick, nodeData }) => {
+    return (
+      <AiFillDelete
+        onClick={() => {
+          deleteFileById(nodeData.id);
+        }}
+      />
+    );
+  };
+
   const handleSave = () => {
-    
     const foundIndex = fileData.findIndex((t) => t.id === content.id);
     if (foundIndex !== -1) {
       let temp = fileData;
@@ -77,7 +89,7 @@ function App() {
     }
     setEdit(false);
   };
-  
+
   return (
     <>
       <Header />
@@ -88,6 +100,7 @@ function App() {
             onNameClick={onNameClick}
             showCheckbox={false}
             indentPixels={12}
+            iconComponents={{ DeleteIcon }}
           />
         </div>
         <div className="right">
