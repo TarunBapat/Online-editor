@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { files } from "../../data";
-import { base_url } from "../../utils";
-
 import Editor from "@monaco-editor/react";
 import FolderTree from "react-folder-tree";
-
-import "react-folder-tree/dist/style.css";
-
 import { AiFillSave, AiFillDelete } from "react-icons/ai";
 import { BiWifi0, BiX } from "react-icons/bi";
+import "react-folder-tree/dist/style.css";
+
+import { files } from "../../data";
+import {
+  base_url,
+  deleteFileById,
+  UpdateFileByID,
+  fetchFileById,
+} from "../../api";
 
 const EditorContainer = () => {
   const [content, setContent] = useState({});
@@ -16,31 +19,6 @@ const EditorContainer = () => {
   const [treeData, setTreeData] = useState([]);
   const [isDirectory, setIsDirectory] = useState(false);
   const [edit, setEdit] = useState(false);
-
-  useEffect(() => {
-    async function fetchTreeData() {
-      const resp = await fetch(`${base_url}/db`);
-      const { files, filetree } = await resp.json();
-      setTreeData(filetree[0]);
-      setFileData(files);
-    }
-    fetchTreeData();
-  }, []);
-
-  const fetchFileById = async (id, isDirectory) => {
-    const response = await fetch(`${base_url}/files/${id}`);
-    const data = await response.json();
-    setContent(data);
-    setIsDirectory(isDirectory);
-  };
-
-  const UpdateFileByID = async (id) => {
-    await fetch(`${base_url}/files/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(content),
-    });
-  };
 
   const handleOnClick = (id, isDirectory) => {
     const contentData = fileData.find((data) => data.id === id);
@@ -59,12 +37,9 @@ const EditorContainer = () => {
     setEdit(false);
     defaultOnClick();
     handleOnClick(nodeData.id, nodeData.isDirectory);
-    // fetchFileById(nodeData.id,nodeData.isDirectory)  fetching file data using API
+    // fetchFileById(nodeData.id,nodeData.isDirectory,setContent,setIsDirectory)  //fetching file data using API
   };
 
-  const deleteFileById = async (id) => {
-    await fetch(`${base_url}/files/${id}`, { method: "DELETE" });
-  };
   const DeleteIcon = ({ onClick: defaultOnClick, nodeData }) => {
     return (
       <AiFillDelete
@@ -76,7 +51,7 @@ const EditorContainer = () => {
   };
 
   const handleSave = () => {
-    //UpdateFileByID(content.id)  upadting file data using API
+    // UpdateFileByID(content.id,content)  //upadting file data using API
     const foundIndex = fileData.findIndex((t) => t.id === content.id);
     if (foundIndex !== -1) {
       let temp = fileData;
@@ -85,6 +60,17 @@ const EditorContainer = () => {
     }
     setEdit(false);
   };
+
+  useEffect(() => {
+    async function fetchTreeData() {
+      const resp = await fetch(`${base_url}/db`);
+      const { files, filetree } = await resp.json();
+      setTreeData(filetree[0]);
+      setFileData(files);
+    }
+    fetchTreeData();
+  }, []);
+
   return (
     <div className="container">
       <div className="left">
